@@ -78,7 +78,7 @@ def check_game_not_finished(board):
                 validate_cols(board, "X")) and \
            not (validate_rows(board, "O") or
                 validate_cols(board, "O")) and \
-           count_marks(board, "_") > 0
+           count_marks(board, " ") > 0
 
 
 def check_draw(board):
@@ -88,7 +88,7 @@ def check_draw(board):
            not (validate_rows(board, "O") or
                 validate_cols(board, "O") or
                 validate_diagonals(board, "O")) and \
-           count_marks(board, "_") == 0
+           count_marks(board, " ") == 0
 
 
 def check_winner(board, mark):
@@ -98,17 +98,15 @@ def check_winner(board, mark):
 
 
 def check_state(board):
-    if check_impossible(board):
-        print_impossible()
-    else:
-        if check_game_not_finished(board):
-            print_game_not_finished()
-        elif check_draw(board):
-            print_draw()
-        elif check_winner(board, "X") and not check_impossible(board):  # TODO: remove check_impossible
-            print_winner("X")
-        elif check_winner(board, "O") and not check_impossible(board):
-            print_winner("O")
+    if check_game_not_finished(board):
+        return False
+    elif check_draw(board):
+        print_draw()
+    elif check_winner(board, "X") and not check_impossible(board):
+        print_winner("X")
+    elif check_winner(board, "O") and not check_impossible(board):
+        print_winner("O")
+    return True
 
 
 def check_move_input_length(move):
@@ -116,7 +114,7 @@ def check_move_input_length(move):
 
 
 def check_occupied(board, move):
-    return board[move_to_board(move)] == "_"
+    return board[move_to_board(move)] == " "
 
 
 def check_move_input_type(move):
@@ -195,16 +193,29 @@ def print_board(board):
     print_dashes()
 
 
-play = input()
+play = "         "
 print_board(play)
-# check_state(play)
+player = True
 while True:
-    first_move = input()
-    if check_move_input(play, first_move):
-        if move_to_board(first_move) < 8:
-            play = play[:move_to_board(first_move)] + "X" + play[move_to_board(first_move) + 1:]
-            print_board(play)
+    player_move = input()
+    if check_move_input(play, player_move):
+        if player:
+            if move_to_board(player_move) < 8:
+                play = play[:move_to_board(player_move)] + "X" + play[move_to_board(player_move) + 1:]
+                print_board(play)
+            else:
+                play = play[:move_to_board(player_move)] + "X"
+                print_board(play)
+
         else:
-            play = play[:move_to_board(first_move)] + "X"
-            print_board(play)
-        break
+            if move_to_board(player_move) < 8:
+                play = play[:move_to_board(player_move)] + "O" + play[move_to_board(player_move) + 1:]
+                print_board(play)
+            else:
+                play = play[:move_to_board(player_move)] + "O"
+                print_board(play)
+
+        if check_state(play):
+            break
+
+        player = not player
